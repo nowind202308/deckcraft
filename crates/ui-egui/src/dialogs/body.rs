@@ -1380,6 +1380,7 @@ fn dlg_preferences(app: &mut SlideApp, ui: &mut Ui, d: &mut Dialog) -> bool {
         d.fields.remove("uiScale");
     }
     language_row(app, ui);
+    ui.checkbox(&mut app.ui.update_check_at_startup, tl!("Check for updates when the app starts"));
     // PowerPoint takes the unit from the system's measurement setting; DeckCraft asks here.
     ui.horizontal(|ui| {
         ui.label(tl!("Measurement units:"));

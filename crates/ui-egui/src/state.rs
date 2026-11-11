@@ -96,6 +96,10 @@ pub struct UiState {
     pub qat: Vec<qat::QatItem>,
     /// Interface language: [`crate::i18n::AUTO`] (follow the system) or a language code (`de`).
     pub language: String,
+    /// Look for a newer official release when the app starts (Preferences). Off by default in
+    /// this build, so a locally built copy is not replaced unless asked; Help › Check for
+    /// Updates… still checks on demand.
+    pub update_check_at_startup: bool,
 }
 
 impl Default for UiState {
@@ -130,6 +134,7 @@ impl Default for UiState {
             comment_focus: None,
             qat: qat::defaults(),
             language: crate::i18n::AUTO.into(),
+            update_check_at_startup: false,
         }
     }
 }
