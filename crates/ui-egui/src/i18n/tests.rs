@@ -83,7 +83,7 @@ fn app_language_reports_and_changes_the_setting() {
     let v = app.run("app.language", json!({})).unwrap();
     assert_eq!((v["language"].as_str(), v["current"].as_str()), (Some(AUTO), Some("en")));
     let codes: Vec<&str> = v["available"].as_array().unwrap().iter().filter_map(|l| l["code"].as_str()).collect();
-    assert_eq!(codes, ["en", "de"]);
+    assert_eq!(codes, ["en", "de", "zh-hant"]);
     let v = app.run("app.language", json!({"language": "DE"})).unwrap();
     assert_eq!((v["language"].as_str(), v["current"].as_str()), (Some("de"), Some("de")));
     assert_eq!(app.ui.language, "de");
@@ -174,4 +174,19 @@ fn cjk_language_flags_follow_script_and_code() {
     assert!(hant.prefers_hant() && !hant.prefers_hans() && !hant.prefers_korean());
     assert!(!ja.prefers_hans() && !ja.prefers_hant() && !ja.prefers_korean());
     assert!(Lang::EN.catalog_text().is_empty());
+}
+
+/// Fork: Taiwan and other Traditional Chinese system locales resolve to the zh-hant catalog,
+/// which shows Taiwan wording. Skipped in a build without craft-i18n.
+#[test]
+fn traditional_chinese_system_locales_pick_zh_hant() {
+    if CRAFT_I18N.is_empty() {
+        return;
+    }
+    for tag in ["zh-TW", "zh_TW.UTF-8", "zh-Hant", "zh-Hant-TW"] {
+        assert_eq!(crate::i18n::lang_from_tag(tag).map(|l| l.code()), Some("zh-hant"), "{tag}");
+    }
+    let zt = crate::i18n::Lang::from_code("zh-hant").unwrap();
+    assert_eq!(crate::i18n::tr(zt, "New Slide"), "新增投影片");
+    assert!(zt.prefers_hant() && zt.uses_cjk());
 }
